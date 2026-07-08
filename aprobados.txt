@@ -1,0 +1,24 @@
+loadout {
+    real: nota, umbral, aprobados
+}
+
+spawn {
+    aprobados = 0.0
+    umbral = 6.0
+    
+    drop("Ingrese nota del alumno (-1 para salir):")
+    loot(nota)
+    
+    rush (nota != -1.0) {
+        peek (nota >= umbral y nota <= 10.0) {
+            aprobados = aprobados + 1.0
+            drop("Alumno Aprobado.")
+        } fallback {
+            drop("Alumno Reprobado o nota invalida.")
+        }
+        
+        loot(nota)
+    }
+    
+    drop("Total de aprobados: ", aprobados)
+}

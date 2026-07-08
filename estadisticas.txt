@@ -1,0 +1,39 @@
+loadout {
+    real: valor, suma, maximo, minimo, promedio, contador
+}
+
+spawn {
+    suma = 0.0
+    contador = 0.0
+    
+    drop("Ingresa un valor (0 para terminar):")
+    loot(valor)
+    
+    maximo = valor
+    minimo = valor
+    
+    rush (valor != 0.0) {
+        suma = suma + valor
+        contador = contador + 1.0
+        
+        peek (valor > maximo) {
+            maximo = valor
+        }
+        
+        peek (valor < minimo) {
+            minimo = valor
+        }
+        
+        drop("Siguiente valor (0 para terminar):")
+        loot(valor)
+    }
+    
+    peek (contador > 0.0) {
+        promedio = suma / contador
+        drop("Promedio: ", promedio)
+        drop("Maximo: ", maximo)
+        drop("Minimo: ", minimo)
+    } fallback {
+        drop("No se ingresaron datos.")
+    }
+}
