@@ -64,5 +64,5 @@ ID:  [a-zA-Z] [a-zA-Z0-9]*;
 NUMERO_REAL: [0-9]+ '.' [0-9]+ ; 
 
 NL: ('\r'? '\n')+ ; 
-WS : [\t]+ -> skip ; 
+WS : [ \t]+ -> skip ; 
 COMENTARIO : '//' ~[\r\n]* -> skip; 
