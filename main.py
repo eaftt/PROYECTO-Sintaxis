@@ -1,6 +1,7 @@
 from antlr4 import *
 from MiLenguajeLexer import MiLenguajeLexer
 from MiLenguajeParser import MiLenguajeParser
+from visitor import ConstructorAST
 
 def probar_archivo(nombre_archivo):
     print(f"--- Iniciando compilador para: {nombre_archivo} ---\n")
@@ -18,6 +19,14 @@ def probar_archivo(nombre_archivo):
     print("Árbol generado:")
     print(arbol.toStringTree(recog=parser))
     print("\n---------------------------------------------------\n")
+    
+    print("Consrtuyendo el AST")
+    visitor = ConstructorAST()
+    ast = visitor.visit(arbol)
+
+    print("AST construido con exito")
+    print("Sentencias encontradas: ", len(ast.sentencias))
+
 
 if __name__ == '__main__':
-    probar_archivo('nombre.txt') # cambiar nombre por alguno de los archivos txt para probar
+    probar_archivo('estadisticas.txt')
