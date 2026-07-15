@@ -20,12 +20,23 @@ def probar_archivo(nombre_archivo):
     print(arbol.toStringTree(recog=parser))
     print("\n---------------------------------------------------\n")
     
-    print("Consrtuyendo el AST")
+    print("Construyendo el AST...")
     visitor = ConstructorAST()
     ast = visitor.visit(arbol)
 
     print("AST construido con exito")
     print("Sentencias encontradas: ", len(ast.sentencias))
+
+    print("\nGenerando código intermedio LLVM...")
+    from generador_llvm import GeneradorLLVM
+
+    generador = GeneradorLLVM()
+    codigo_llvm = generador.generar(ast)
+
+    with open("salida.ll", "w") as f:
+        f.write(codigo_llvm)
+
+    print("[SISTEMA] Archivo 'salida.ll' generado con éxito para compilar.")
 
 
 if __name__ == '__main__':
