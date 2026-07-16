@@ -2,6 +2,7 @@ from antlr4 import *
 from MiLenguajeLexer import MiLenguajeLexer
 from MiLenguajeParser import MiLenguajeParser
 from visitor import ConstructorAST
+from semantico import AnalizadorSemantico
 
 def probar_archivo(nombre_archivo):
     print(f"--- Iniciando compilador para: {nombre_archivo} ---\n")
@@ -20,23 +21,27 @@ def probar_archivo(nombre_archivo):
     print(arbol.toStringTree(recog=parser))
     print("\n---------------------------------------------------\n")
     
-    print("Construyendo el AST...")
+    print("Construyendo el AST")
     visitor = ConstructorAST()
     ast = visitor.visit(arbol)
 
+    print("\n===== DECLARACIONES =====")
+    for d in ast.declaraciones:
+        print(type(d).__name__, vars(d))
+
+    print("\n===== SENTENCIAS =====")
+    for s in ast.sentencias:
+        print(type(s).__name__, vars(s))
+
     print("AST construido con exito")
-    print("Sentencias encontradas: ", len(ast.sentencias))
+    print("Sentencias encontradas:", len(ast.sentencias))
 
-    print("\nGenerando código intermedio LLVM...")
-    from generador_llvm import GeneradorLLVM
+    print("\nIniciando análisis semántico...")
 
-    generador = GeneradorLLVM()
-    codigo_llvm = generador.generar(ast)
+    analizador = AnalizadorSemantico()
+    analizador.analizar(ast)
 
-    with open("salida.ll", "w") as f:
-        f.write(codigo_llvm)
-
-    print("[SISTEMA] Archivo 'salida.ll' generado con éxito para compilar.")
+    print("Análisis semántico terminado sin errores.")
 
 
 if __name__ == '__main__':
