@@ -36,15 +36,20 @@ class OperacionBinaria(ASTnodo):
         self.izquierdo = izquierdo
         self.operador = operador
         self.derecho = derecho
+    def __repr__(self):
+        return f"({self.izquierdo} {self.operador} {self.derecho})"
 
 class NumeroReal(ASTnodo):
     def __init__(self, valor):
         self.valor = float(valor)
+    def __repr__(self):
+        return f"NumeroReal({self.valor})"
     
 class VariableID(ASTnodo): 
     def __init__(self, nombre):
         self.nombre = nombre
-
+    def __repr__(self):
+        return f"VariableID('{self.nombre}')"
 
 class Declaracion(ASTnodo):
     def __init__(self, variables):
@@ -55,7 +60,9 @@ class Comparacion(ASTnodo):
         self.izquierda = izquierda
         self.operador = operador
         self.derecha = derecha
-    
+    def __repr__(self):
+        return f"({self.izquierda} {self.operador} {self.derecha})"
+
 class Negacion(ASTnodo):
     def __init__(self, condicion):
         self.condicion = condicion
@@ -73,6 +80,7 @@ class Or(ASTnodo):
 class Raiz(ASTnodo):
     def __init__(self, expresion):
         self.expresion = expresion
+
 
 
 
