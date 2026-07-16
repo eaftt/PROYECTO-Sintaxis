@@ -16,6 +16,19 @@ class ConstructorAST(MiLenguajeVisitor):
                 lista_sentencias.append(nodo_sentencia)
         return lista_sentencias
 
+    def visitDeclaracion_vars(self, ctx):
+        declaraciones = []
+        for decl in ctx.declaracion():
+            declaraciones.append(self.visit(decl))
+        return declaraciones
+    
+    def visitDeclaracion(self, ctx):
+        variables = []
+        for identificador in ctx.ID():
+            variables.append(identificador.getText())
+        return Declaracion(variables)
+
+
     def visitAsignacion(self, ctx):
         nombre_var = ctx.ID().getText()
         nodo_expr = self.visit(ctx.expr())
@@ -41,6 +54,21 @@ class ConstructorAST(MiLenguajeVisitor):
         operador = ctx.getChild(1).getText()
         return OperacionBinaria(nodo_izq, operador, nodo_der)
     
+    def visitExprPotencia(self, ctx):
+        izquierda = self.visit(ctx.expr(0))
+        derecha = self.visit(ctx.expr(1))
+        operador = ctx.getChild(1).getText()
+        return OperacionBinaria(
+            izquierda,
+            operador,
+            derecha
+        )
+
+    def visitExprRaiz(self, ctx):
+        expresion = self.visit(ctx.expr())
+        return Raiz(expresion)
+
+    
     def visitExprParens(self, ctx):
         return self.visit(ctx.expr())
         
@@ -48,19 +76,95 @@ class ConstructorAST(MiLenguajeVisitor):
         nombre_var = ctx.ID().getText()
         return Entrada(nombre_var)
 
+    def visitExpr_escritura(self, ctx):
+        if ctx.CADENA():
+            return ctx.CADENA().getText()
+        else:
+            return self.visit(ctx.expr())
+
     def visitEscritura(self, ctx):
-        return Salida("Texto de salida", [])
+        cadenas = []
+        expresiones = []
+
+        for elemento in ctx.expr_escritura():
+            resultado = self.visit(elemento)
+
+            if isinstance(resultado, str):
+                cadenas.append(resultado)
+            else:
+                expresiones.append(resultado)
+
+        return Salida(cadenas, expresiones)
+
+
+    def visitCondRelacional(self, ctx):
+        izquierda = self.visit(ctx.expr(0))
+        derecha = self.visit(ctx.expr(1))
+        operador = ctx.OP_REL().getText()
+        return Comparacion(izquierda, operador, derecha)
+
+
+    def visitCondNegacion(self, ctx):
+        condicion = self.visit(ctx.condicion())
+        return Negacion(condicion)
+
+
+    def visitCondAnd(self, ctx):
+        izquierda = self.visit(ctx.condicion(0))
+        derecha = self.visit(ctx.condicion(1))
+        return And(izquierda, derecha)
+
+
+    def visitCondOr(self, ctx):
+        izquierda = self.visit(ctx.condicion(0))
+        derecha = self.visit(ctx.condicion(1))
+        return Or(izquierda, derecha)
+
+
+    def visitCondParens(self, ctx):
+        return self.visit(ctx.condicion())
 
     def visitRepetitiva(self, ctx):
         nodo_condicion = self.visit(ctx.condicion())
-        
-        sentencias_ciclo = []
-        for sent_ctx in ctx.sentencia():
-            nodo = self.visit(sent_ctx)
-            if nodo is not None:
-                sentencias_ciclo.append(nodo)
-        return Ciclo(nodo_condicion, sentencias_ciclo)
 
+        sentencias = []
+
+        for sentencia_ctx in ctx.sentencia():
+            nodo = self.visit(sentencia_ctx)
+            if nodo is not None:
+                sentencias.append(nodo)
+
+        return Ciclo(nodo_condicion, sentencias)
+    
     def visitCondicional(self, ctx):
-        nodo_condicion = self.visit(ctx.condicion())    
-        return Condicional(nodo_condicion, [], [])
+        nodo_condicion = self.visit(ctx.condicion())
+
+        sentencias = []
+        sentencias_else = []
+
+        cantidad = len(ctx.sentencia())
+
+        if "fallback" in ctx.getText():
+            mitad = cantidad // 2
+
+            for s in ctx.sentencia()[:mitad]:
+                nodo = self.visit(s)
+                if nodo is not None:
+                    sentencias.append(nodo)
+
+            for s in ctx.sentencia()[mitad:]:
+                nodo = self.visit(s)
+                if nodo is not None:
+                    sentencias_else.append(nodo)
+
+        else:
+            for s in ctx.sentencia():
+                nodo = self.visit(s)
+                if nodo is not None:
+                    sentencias.append(nodo)
+
+        return Condicional(
+            nodo_condicion,
+            sentencias,
+            sentencias_else
+        )
