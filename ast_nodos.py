@@ -46,4 +46,33 @@ class VariableID(ASTnodo):
         self.nombre = nombre
 
 
+class Declaracion(ASTnodo):
+    def __init__(self, variables):
+        self.variables = variables
+
+class Comparacion(ASTnodo):
+    def __init__(self, izquierda, operador, derecha):
+        self.izquierda = izquierda
+        self.operador = operador
+        self.derecha = derecha
+    
+class Negacion(ASTnodo):
+    def __init__(self, condicion):
+        self.condicion = condicion
+
+class And(ASTnodo):
+    def __init__(self, izquierda, derecha):
+        self.izquierda = izquierda
+        self.derecha = derecha
+
+class Or(ASTnodo):
+    def __init__(self, izquierda, derecha):
+        self.izquierda = izquierda
+        self.derecha = derecha
+
+class Raiz(ASTnodo):
+    def __init__(self, expresion):
+        self.expresion = expresion
+
+
 
