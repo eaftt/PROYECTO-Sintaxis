@@ -18,6 +18,7 @@ class GeneradorLLVM:
         return etiq
 
     def generar(self, nodo_raiz):
+        self.codigo.append('declare double @llvm.pow.f64(double, double)')
         self.codigo.append('declare i32 @printf(i8*, ...)')
         self.codigo.append('declare double @llvm.sqrt.f64(double)')
         self.codigo.append('@str_format = private unnamed_addr constant [4 x i8] c"%f\\0A\\00"')
@@ -55,6 +56,8 @@ class GeneradorLLVM:
             
             if nodo.operador == '+':
                 self.codigo.append(f"{reg_res} = fadd double {reg_izq}, {reg_der}")
+            elif nodo.operador == '^':
+                self.codigo.append(f"{reg_res} = call double @llvm.pow.f64(double {reg_izq}, double {reg_der})")
             elif nodo.operador == '-':
                 self.codigo.append(f"{reg_res} = fsub double {reg_izq}, {reg_der}")
             elif nodo.operador == '*':
