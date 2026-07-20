@@ -19,6 +19,7 @@ class GeneradorLLVM:
 
     def generar(self, nodo_raiz):
         self.codigo.append('declare i32 @printf(i8*, ...)')
+        self.codigo.append('declare double @llvm.sqrt.f64(double)')
         self.codigo.append('@str_format = private unnamed_addr constant [4 x i8] c"%f\\0A\\00"')
         self.codigo.append('define i32 @main() {')
         self.codigo.append('entry:')        
@@ -61,7 +62,13 @@ class GeneradorLLVM:
             elif nodo.operador == '/':
                 self.codigo.append(f"{reg_res} = fdiv double {reg_izq}, {reg_der}")
             return reg_res
-            
+
+        elif isinstance(nodo, Raiz):
+            reg_val = self.visitar(nodo.expresion)
+            reg_res = self.nuevo_registro()
+            self.codigo.append(f"{reg_res} = call double @llvm.sqrt.f64(double {reg_val})")
+            return reg_res
+        
         elif isinstance(nodo, Asignacion):
             self.variables_declaradas.add(nodo.id_nombre)
             reg_val = self.visitar(nodo.expresion)
