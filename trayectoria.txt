@@ -1,24 +1,20 @@
 loadout {
-    real: velocidadinicial, gravedad, tiempo, altura
-
+    real: velocidadInicial, gravedad, tiempo, altura
 }
 
 spawn {
     gravedad = 9.81
-
+    
     drop("--- ANALISIS DE TRAYECTORIA ---")
-
     drop("Ingresa la velocidad inicial hacia arriba:")
-
-    loot(velocidadinicial)
-
+    loot(velocidadInicial)
+    
     drop("Ingresa el tiempo a analizar:")
-
     loot(tiempo)
-
-    altura = velocidadinicial * tiempo - 0.5 * gravedad * tiempo ^ 2.0
-
-    peek(altura > 0.0) {
+    
+    altura = velocidadInicial * tiempo - 0.5 * gravedad * tiempo ^ 2.0
+    
+    peek (altura > 0.0) {
         drop("El proyectil sigue en el aire.")
         drop("Altura actual: ", altura)
     } fallback {
