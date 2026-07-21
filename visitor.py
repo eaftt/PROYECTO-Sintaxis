@@ -142,21 +142,26 @@ class ConstructorAST(MiLenguajeVisitor):
         sentencias = []
         sentencias_else = []
 
-        cantidad = len(ctx.sentencia())
+        indice_fallback = -1
+        for i in range(ctx.getChildCount()):
+            if "fallback" in ctx.getChild(i).getText():
+                indice_fallback = i
+                break
 
-        if "fallback" in ctx.getText():
-            mitad = cantidad // 2
-
-            for s in ctx.sentencia()[:mitad]:
+        if indice_fallback != -1:
+            for s in ctx.sentencia():
                 nodo = self.visit(s)
                 if nodo is not None:
-                    sentencias.append(nodo)
-
-            for s in ctx.sentencia()[mitad:]:
-                nodo = self.visit(s)
-                if nodo is not None:
-                    sentencias_else.append(nodo)
-
+                    posicion_sentencia = -1
+                    for i in range(ctx.getChildCount()):
+                        if ctx.getChild(i) == s:
+                            posicion_sentencia = i
+                            break
+                    
+                    if posicion_sentencia < indice_fallback:
+                        sentencias.append(nodo)
+                    else:
+                        sentencias_else.append(nodo)
         else:
             for s in ctx.sentencia():
                 nodo = self.visit(s)
